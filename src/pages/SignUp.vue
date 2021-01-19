@@ -43,8 +43,9 @@
         lazy-rules
         :rules="[ val => val && val.length > 0 || 'Please type your Password']"
       />
-      <q-toggle v-model="formData.accept" label="I agree" />
+<br>
 
+     <p style="text-align: right">Alreay have an Account? <router-link :to="{ name: 'login'}">Login</router-link></p>
       <div>
         <q-btn label="Submit" type="submit" color="primary"/>
         <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
@@ -65,54 +66,47 @@ export default {
         name: null,
         email: null,
         password: null,
-        confirmPassword: null,
-        accept: false
+        confirmPassword: null
       }
     }
   },
   methods: {
     onSubmit () {
-      if (this.formData.accept !== true) {
+      const headers = {
+        'Content-Type': 'application/json'
+      }
+      if (this.formData.password === this.formData.confirmPassword) {
+        console.log('this.formData', this.formData)
+        axios.post('http://localhost:3000/register', this.formData, headers).then((res) => {
+          console.log('response', res)
+          if (res.data.auth) {
+            localStorage.setItem('token', res.data.token)
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'Submitted'
+            })
+            this.$router.push({ name: 'login' })
+          } else {
+            this.$q.notify({
+              color: 'red-5',
+              textColor: 'white',
+              icon: 'warning',
+              message: 'Fill the Form First'
+            })
+          }
+        }).catch((error) => {
+          console.log('error', error)
+          // error action
+        })
+      } else {
         this.$q.notify({
           color: 'red-5',
           textColor: 'white',
           icon: 'warning',
-          message: 'You need to accept the accept the terms & conditions first'
+          message: 'Password and Confirm Password not match'
         })
-      } else {
-        const headers = {
-          'Content-Type': 'application/json'
-        }
-        var passwordHash = require('password-hash')
-        var hashedPassword = passwordHash.generate(this.formData.password)
-        var hashedPwdStatus = passwordHash.verify(this.formData.confirmPassword, hashedPassword)
-        console.log('hashedPwdStatus', hashedPwdStatus)
-        if (hashedPwdStatus) {
-          this.formData.password = hashedPassword
-          console.log('this.formData', this.formData)
-          axios.post('http://localhost:3000/customers', this.formData, headers).then((res) => {
-            console.log('response', JSON.stringify(res))
-            if (res) {
-              this.$q.notify({
-                color: 'green-4',
-                textColor: 'white',
-                icon: 'cloud_done',
-                message: 'Submitted'
-              })
-            }
-            // success action
-          }).catch((error) => {
-            console.log('error', error)
-            // error action
-          })
-        } else {
-          this.$q.notify({
-            color: 'red-5',
-            textColor: 'white',
-            icon: 'warning',
-            message: 'Password and Confirm Password not match'
-          })
-        }
       }
     },
 
@@ -120,7 +114,6 @@ export default {
       this.formData.name = null
       this.formData.email = null
       this.formData.password = null
-      this.formData.accept = false
     }
   }
 }

@@ -1,9 +1,9 @@
 <template>
   <q-item
     clickable
+v-ripple
     tag="a"
-    target="_blank"
-    :href="link"
+    :to="link"
   >
     <q-item-section
       v-if="icon"
@@ -32,12 +32,11 @@ export default {
 
     caption: {
       type: String,
-      default: ''
+      default: '#'
     },
 
     link: {
-      type: String,
-      default: '#'
+      type: String
     },
 
     icon: {

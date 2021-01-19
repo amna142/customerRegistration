@@ -1,6 +1,8 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+<div id="q-app">
+  <div class="q-pa-md">
+  <q-layout view="hHh Lpr lff" container style="height: 680px" class="shadow-2 rounded-borders">
+    <q-header elevated class="bg-orange" >
       <q-toolbar>
         <q-btn
           flat
@@ -12,10 +14,10 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          <b>PAYROLL || DYANSOFTCLOUD</b>
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div  @click="deleteJwt"> <q-btn label="Logout" type="submit" color="blue" /></div>
       </q-toolbar>
     </q-header>
 
@@ -23,19 +25,22 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+:width="300"
+          :breakpoint="500"
       content-class="bg-grey-1"
     >
       <q-list>
         <q-item-label
           header
-          class="text-grey-8"
+          class="text-blue"
         >
-          Essential Links
+          Main Menu
         </q-item-label>
         <EssentialLink
           v-for="link in essentialLinks"
           :key="link.title"
           v-bind="link"
+class="text-blue"
         />
       </q-list>
     </q-drawer>
@@ -44,59 +49,67 @@
       <router-view />
     </q-page-container>
   </q-layout>
+  </div>
+  </div>
 </template>
 
 <script>
 import EssentialLink from 'components/EssentialLink.vue'
-
+import axios from 'axios'
 const linksData = [
   {
     title: 'Docs',
-    caption: 'quasar.dev',
+    caption: 'payroll.docs',
     icon: 'school',
-    link: 'https://quasar.dev'
+    link: '/docs'
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
+    title: 'Attendance',
+    caption: 'attendance.dynasoftcloud',
     icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    link: '/attendance'
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
+    title: 'Employees',
+    caption: 'employees.dynasoftcloud',
     icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+    link: '/employees'
   }
 ]
-
 export default {
   name: 'MainLayout',
   components: { EssentialLink },
+  created () {
+    console.log('hello amna')
+    // make a call to verify tokens
+    const token = localStorage.getItem('token')
+    axios.get('http://localhost:3000/home', {
+      headers: {
+        authorization: token,
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => {
+      console.log('response', res)
+      if (res.data.auth === false) {
+        this.$router.push({ name: 'login' })
+      }
+      // success action
+    }).catch((error) => {
+      console.log('error', error)
+      // error action
+    })
+  },
+  methods: {
+    deleteJwt () {
+      console.log('hi')
+      var token = localStorage.getItem('token')
+      console.log('token', token)
+      if (token) {
+        localStorage.removeItem('token')
+        this.$router.push({ name: 'login' })
+      }
+    }
+  },
   data () {
     return {
       leftDrawerOpen: false,
