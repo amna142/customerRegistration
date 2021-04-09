@@ -1,4 +1,24 @@
 <template>
+<div id="app">
+<vue-particles
+        color="#fb8c00"
+        :particleOpacity="0.7"
+        :particlesNumber="100"
+        shapeType="circle"
+        :particleSize="4"
+        linesColor="#448aff"
+        :linesWidth="2"
+        :lineLinked="true"
+        :lineOpacity="0.4"
+        :linesDistance="150"
+        :moveSpeed="6"
+        :hoverEffect="true"
+        hoverMode="grab"
+        :clickEffect="true"
+        clickMode="push"
+      >
+</vue-particles>
+<div class="centered-text">
   <div class="q-pa-md row my-card2">
     <q-card class="my-card">
     <q-card-section>
@@ -25,10 +45,10 @@
         lazy-rules
         :rules="[ val => val && val.length > 0 || 'Please type your Password']"
       />
-<p style="text-align: right"><router-link :to="{ name: 'SignUp'}">Register Yourself!</router-link> &nbsp; &nbsp; &nbsp;  <router-link :to="{ name: 'SignUp'}">Forgot Password?</router-link>
+<p style="text-align: right"><router-link :to="{ name: 'SignUp'}" style="color: blue">Register Yourself!</router-link> &nbsp; &nbsp; &nbsp;  <router-link :to="{ name: 'SignUp'}" style="color: blue">Forgot Password?</router-link>
 </p>
       <div>
-        <q-btn label="Submit" @click="showLoading" type="submit" color="orange"/>
+        <q-btn label="Submit" type="submit" color="orange"/>
       </div>
     </q-form>
 
@@ -36,15 +56,14 @@
       </q-card-section>
     </q-card>
   </div>
+  </div>
+  </div>
 </template>
 <script>
 import axios from 'axios'
-import {
-
-  // optional!, for example below
-  // with custom spinner
-  QSpinnerFacebook
-} from 'quasar'
+import VueParticles from 'vue-particles'
+import Vue from 'vue'
+Vue.use(VueParticles)
 export default {
   data () {
     return {
@@ -61,20 +80,6 @@ export default {
     }
   },
   methods: {
-    showLoading () {
-      this.$q.loading.show({
-        spinner: QSpinnerFacebook,
-        spinnerColor: 'yellow',
-        spinnerSize: 140,
-        backgroundColor: 'purple',
-        messageColor: 'black',
-        message: 'loading'
-      })
-      setTimeout(() => {
-        // this.$q.loading.hide()
-        this.timer = 0
-      }, 3000)
-    },
     onSubmit () {
       console.log('this.formData', this.formData)
       const headers = {
@@ -84,14 +89,15 @@ export default {
         console.log('response', res)
         if (res.data.auth) {
           localStorage.setItem('token', res.data.token)
+          localStorage.setItem('data', this.formData.email)
           this.$q.notify({
             color: 'green-4',
             textColor: 'white',
             icon: 'cloud_done',
             message: 'Login Successfully'
           })
+          this.$router.push({ name: 'home' })
         }
-        this.$router.push({ name: 'home' })
         // success action
       }).catch((error) => {
         console.log('error', error)
@@ -110,13 +116,19 @@ export default {
 <style lang="sass" scoped>
 .my-card
   width: 100%
-  max-width: 700px
+  max-width: 600px
   margin: 0 auto
-  padding-top: 3%
-  padding-left: 7%
+  padding-top: 0%
+  padding-left: 5%
 </style>
 <style lang="sass" scoped>
 .my-card2
-  padding-top: 5%
-  padding-left: 5%
+  padding-top: 9%
+  padding-left: 2%
+.centered-text
+  position: absolute
+  top: 0%
+  width: 100%
+#particles-js
+  height: 100vh
 </style>

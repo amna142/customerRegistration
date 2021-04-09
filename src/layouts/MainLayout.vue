@@ -17,7 +17,17 @@
           <b>PAYROLL || DYANSOFTCLOUD</b>
         </q-toolbar-title>
 
-        <div  @click="deleteJwt"> <q-btn label="Logout" type="submit" color="blue" /></div>
+<div class="q-pa-md">
+    <q-btn-dropdown color="blue" :label="name" dropdown-icon="change_history">
+      <q-list>
+        <q-item clickable v-close-popup>
+          <q-item-section>
+            <q-item-label  @click="deleteJwt" type="submit">Logout</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+  </div>
       </q-toolbar>
     </q-header>
 
@@ -81,8 +91,11 @@ export default {
   components: { EssentialLink },
   created () {
     console.log('hello amna')
+    this.name = localStorage.getItem('data')
+    console.log('name', this.name)
     // make a call to verify tokens
     const token = localStorage.getItem('token')
+    console.log('token', token)
     axios.get('http://localhost:3000/home', {
       headers: {
         authorization: token,
@@ -106,14 +119,19 @@ export default {
       console.log('token', token)
       if (token) {
         localStorage.removeItem('token')
+        localStorage.removeItem('data')
         this.$router.push({ name: 'login' })
       }
+    },
+    onItemClick () {
+      // console.log('Clicked on an Item')
     }
   },
   data () {
     return {
       leftDrawerOpen: false,
-      essentialLinks: linksData
+      essentialLinks: linksData,
+      name: null
     }
   }
 }
